@@ -33,7 +33,9 @@ jobs:
       - name: Prepare environment
         run: |
           sudo apt update
-          sudo apt install libtool-bin gperf python3-docutils autopoint gettext automake-1.15
+          sudo apt install libtool-bin gperf python3-docutils autopoint gettext
+          wget https://gist.githubusercontent.com/pilinux/0ac30696c22debc6b206d00d35917f59/raw/d905fcb8849f7c27d21ce512aab9127a17c9f88c/automake1_15.sh
+          sudo bash automake1_15.sh
       - name: Run shellcheck
         run: sh ./trunk/tools/shellcheck.sh
       - name: Prepare toolchain
