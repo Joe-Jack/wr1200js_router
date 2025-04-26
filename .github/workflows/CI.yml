@@ -17,7 +17,7 @@ on:
 jobs:
   build:
     name: build
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-25.04
     if: ${{ !(github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')) }}
     env:
       build_variant: ${{ matrix.build_variant }}
@@ -33,10 +33,7 @@ jobs:
       - name: Prepare environment
         run: |
           sudo apt update
-          sudo apt install libtool-bin gperf python3-docutils autopoint gettext pkg-config
-          wget https://gist.githubusercontent.com/pilinux/0ac30696c22debc6b206d00d35917f59/raw/d905fcb8849f7c27d21ce512aab9127a17c9f88c/automake1_15.sh
-          sudo bash automake1_15.sh
-          sudo ln -s /usr/share/aclocal/pkg.m4 /usr/local/share/aclocal/pkg.m4
+          sudo apt install libtool-bin gperf python3-docutils autopoint gettext pkg-config bison
       - name: Run shellcheck
         run: sh ./trunk/tools/shellcheck.sh
       - name: Prepare toolchain
