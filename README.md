@@ -26,6 +26,12 @@ Contributors of this project are not responsible for what happens next.
 ### 特别说明 ###
 * 汉化字典来自：https://github.com/gorden5566/padavan
 * 更新日志：https://www.jianshu.com/p/d76a63a12eae
+* 默认512M 内存，如需修改到默认的128M，trunk/configs/boards/WR1200JS/kernel-3.4.x.config, 请删除
+CONFIG_RT2880_DRAM_512M=y
+CONFIG_RALINK_RAM_SIZE=512
+并添加
+CONFIG_RT2880_DRAM_128M=y
+CONFIG_RALINK_RAM_SIZE=128
 
 ***
 
