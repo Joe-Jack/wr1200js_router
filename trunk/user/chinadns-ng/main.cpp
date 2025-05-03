@@ -231,21 +231,29 @@ CURLcode curl_get_req(const std::string &url, std::string &response)
 }
 
 int main(int argc, char *argv[]) {
-	std::string  decoded, encoded, url;
+	std::string  decoded, encoded, input;
 	std::string str, del = "\n", ss_file = "/tmp/ss_link"; // 输出字符串
 	std::vector<std::string> tokens; // 逐行输入
 	std::vector<std::unique_ptr<Protocol>> protos;
 	TinyJson jsonarray;
 	std::fstream f;
 	
-	if (!argc) {
+	if (argc < 2) {
 		std::cout << "输入url" << std::endl;
 		return 1;
 	}
 
+	input = argv[1];
 	curl_global_init(CURL_GLOBAL_ALL);
-	url = argv[1];	
-	curl_get_req(url, encoded);
+	if (input.find("http://") == 0 || input.find("https://") == 0) {
+		if (curl_get_req(input, encoded) != CURLE_OK) {
+			return 2;
+		}
+	} else {
+		std::cerr << "无效的 URL: " << input << "\n";
+		return 1;
+	}
+
 	if (Protocol::base64Decode(encoded, decoded)) {
 		tokens = splitString(decoded, del);
 		for (auto it = tokens.begin(); it != tokens.end(); ++it) {

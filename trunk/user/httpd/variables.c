@@ -865,10 +865,7 @@
 			{"ss_watchcat","",NULL, FALSE},
 			{"ss_update_chnroute","",NULL, FALSE},
 			{"ss_update_gfwlist","",NULL, FALSE},
-			{"ss-tunnel_enable","",NULL, EVM_RESTART_SS_TUNNEL},
-			{"ss-tunnel_local_port","",NULL, EVM_RESTART_SS_TUNNEL},
-			{"ss-tunnel_remote","",NULL, EVM_RESTART_SS_TUNNEL},
-			{"ss-tunnel_mtu","",NULL, EVM_RESTART_SS_TUNNEL},
+			{"ss_link","",NULL, FALSE},
 			{0,0,0,0}
 	};
 #endif
