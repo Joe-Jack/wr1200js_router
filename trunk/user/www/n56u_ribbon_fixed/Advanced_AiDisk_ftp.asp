@@ -208,7 +208,7 @@ function contrastSelectAccount(selectedObj){
 	}
 	
 	selectedObj.style.marginRight = "-1px";
-	selectedObj.style.background = "url(/images/AiDisk/user_icon.gif) #FFF left no-repeat";
+	selectedObj.style.background = "url(/images/AiDisk/user_icon.gif) #8f8f8f3d left no-repeat";
 	selectedObj.style.cursor = "default";
 	selectedObj.style.fontWeight ="bolder";
 	

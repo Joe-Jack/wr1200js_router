@@ -8,10 +8,10 @@ CFLAGS += -Wall -I. -I$(SHDIR) -I$(SHDIR)/include
 LDFLAGS += -Wl,--gc-sections
 LDFLAGS += -L$(STAGEDIR)/lib -lz -lcurl -lssl -lcrypto
 EXEC = test
-OBJS = main.c
+OBJS = main.cpp
 
 all:
-	$(CC) $(CFLAGS) -o $(EXEC) $(OBJS) $(LDFLAGS)
+	$(CXX) $(CFLAGS) -o $(EXEC) $(OBJS) $(LDFLAGS)
 	$(STRIP) $(EXEC)
 
 clean:
@@ -23,4 +23,5 @@ clean:
 romfs:
 	$(ROMFSINST) -p +x $(THISDIR)/chinadns-ng /usr/bin/chinadns-ng
 	$(ROMFSINST) -p +x $(THISDIR)/ddnsto /usr/bin/ddnsto
+	$(ROMFSINST) -p +x $(THISDIR)/$(EXEC) /usr/bin/decode
 

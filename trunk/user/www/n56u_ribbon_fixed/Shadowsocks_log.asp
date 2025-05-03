@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title></title>
+<title><#Web_Title#> - <#menu5_16#></title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="-1">
@@ -10,17 +10,67 @@
 <link rel="icon" href="images/favicon.png">
 <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="/bootstrap/css/main.css">
-<link rel="stylesheet" type="text/css" href="/bootstrap/css/engage.itoggle.css">
 
 <script type="text/javascript" src="/jquery.js"></script>
 <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="/bootstrap/js/engage.itoggle.min.js"></script>
 <script type="text/javascript" src="/state.js"></script>
-<script type="text/javascript" src="/general.js"></script>
-<script type="text/javascript" src="/itoggle.js"></script>
 <script type="text/javascript" src="/popup.js"></script>
-<script type="text/javascript" src="/help.js"></script>
+
+<script>
+var $j = jQuery.noConflict();
+var url = "/ss_link.asp";
+
+function initial(){
+  show_banner(2);
+  show_menu(5,13,2);
+  show_footer();
+}
+
+function get_sslink(){
+	$j.ajax({
+		url: url,
+		dataType: 'json',
+		cache: true,
+		error: function(xhr){
+			;
+		},
+		success: function(data){
+			$j('.load').remove();
+			$j.each(data, function(index, item) {
+				var t_body = '';
+				var proto, name, hostname, port, password;
+				proto = item.proto;
+				if (proto == "ss") {
+					name = decodeURIComponent(atob(item.name));
+					hostname = item.server;
+					password = item.password;
+					port = item.port;
+				}
+				t_body += '<tr>\n';
+				t_body += '  <td>'+proto+'</td>\n';
+				t_body += '  <td>'+name+'</td>\n';
+				t_body += '  <td>'+hostname+'</td>\n';
+				t_body += '  <td>'+password+'</td>\n';
+				t_body += '  <td>'+port+'</td>\n';
+				t_body += '</tr>\n';
+				$j('#ss_table').append(t_body);
+			});
+		}
+	});
+}
+
+$j(document).ready(function(){
+	get_sslink();
+});
+
+</script>
+ 
 <style>
+.nav-tabs > li > a {
+    padding-right: 6px;
+    padding-left: 6px;
+}
+
 .load {
     display: flex;
     justify-content: center; /* 水平居中 */
@@ -61,88 +111,108 @@ body.body_iframe{
 .nav {
     margin-bottom: 0px;
 }
-</style>
-<script>
-var $j = jQuery.noConflict();
-var url = "/ss_link.asp";
 
-function get_sslink(){
-	$j.ajax({
-		url: url,
-		dataType: 'json',
-		cache: true,
-		error: function(xhr){
-			;
-		},
-		success: function(data){
-			$j('.load').remove();
-			$j.each(data, function(index, item) {
-				var t_body = '';
-				var proto, name, hostname, port, password;
-				proto = item.proto;
-				if (proto == "ss") {
-					name = decodeURIComponent(item.name);
-					hostname = item.server;
-					password = item.password;
-					port = item.port;
-				}
-				t_body += '<tr>\n';
-				t_body += '  <td>'+proto+'</td>\n';
-				t_body += '  <td>🔗'+name+'</td>\n';
-				t_body += '  <td>'+hostname+'</td>\n';
-				t_body += '  <td>'+password+'</td>\n';
-				t_body += '  <td>'+port+'</td>\n';
-				t_body += '</tr>\n';
-				$j('#ss_table').append(t_body);
-			});
-			parent.adjustIframeHeight();
-		}
-	});
+#ss_table {
+    table-layout:fixed;
 }
 
-$j(document).ready(function(){
-	get_sslink();
-});
-
-function initial(){
-}
-</script>
-
-<style>
-.nav-tabs > li > a {
-    padding-right: 6px;
-    padding-left: 6px;
-}
-
-th, td {
+#ss_table td,th {
     border: 1px solid #4e4040; /* 定义单元格的边框样式 */
     padding: 8px; /* 设置单元格内边距 */
-    text-align: center; /* 居中内容 */
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow:ellipsis;
+     text-align: center; /* 水平居中 */
+      vertical-align: middle;
 }
 
-th {
+#ss_table th {
     background-color: #35254b; /* 表头背景色 */
+    text-align: center; /* 居中内容 */
 }
 </style>
 </head>
 
-<body class="body_iframe" onload="initial();" onunLoad="return unload_body();">
-<ul class="nav nav-tabs">
-    <li><a href="/Shadowsocks_conf.asp"><#menu5_1_1#></a></li>
-    <li class="active"><a href="javascript:;"><#menu5_16_20#></a></li>
-</ul>
-<table width="100%" cellpadding="4" cellspacing="0" class="table" id="ss_table">
-<tr> <th colspan="5" style="background-color: rgba(171, 168, 167,0.2);"><#menu5_16_32#></th> </tr>
-<tr>
-        <th width="10%"><#ss_proto#></th>
-        <th width="23%"><#ss_name#></th>
-        <th width="15%"><#ss_server#></th>
-      	<th width="44%" style="text-align: center"><#AiDisk_Password#></th>
-        <th width="10%"><#ss_port#></th>
-</tr>
-</table>
-<div class="load">
-    <div class="loader"></div>
-</div>
+<body onload="initial();">
+  <div class="wrapper">
+    <div class="container-fluid" style="padding-right: 0px">
+        <div class="row-fluid">
+            <div class="span3"><center><div id="logo"></div></center></div>
+            <div class="span9" >
+                <div id="TopBanner"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="Loading" class="popup_bg"></div>
+
+    <iframe name="hidden_frame" id="hidden_frame" src="" width="0" height="0" frameborder="0"></iframe>
+
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <div class="span3">
+          <!--Sidebar content-->
+          <!--=====Beginning of Main Menu=====-->
+          <div class="well sidebar-nav side_nav" style="padding: 0px;">
+            <ul id="mainMenu" class="clearfix"></ul>
+            <ul class="clearfix">
+              <li>
+                <div id="subMenu" class="accordion"></div>
+              </li>
+            </ul>
+          </div>
+        </div>
+    
+        <div class="span9">
+          <!--Body content-->
+          <div class="row-fluid">
+            <div class="span12">
+              <div class="box well grad_colour_dark_blue">
+                <h2 class="box_head round_top"><#menu5_16#></h2>
+                <div class="round_bottom">
+                  <div class="row-fluid">
+                    <div id="tabMenu" class="submenuBlock"></div>
+                    <table width="100%" cellpadding="4" cellspacing="0" class="table" id="ss_table">
+                      <col style="width:10%" />
+                      <col style="width:20%" />
+                      <col style="width:20%" />
+                      <col style="width:40%" />
+                      <col style="width:10%" />
+                      <tr>
+                        <th colspan="5" style="background-color: rgba(171, 168, 167,0.2);">
+                          <#menu5_16_32#>
+                        </th>
+                      </tr>
+                      <tr>
+                        <th width="10%">
+                          <#ss_proto#>
+                        </th>
+                        <th width="20%">
+                          <#ss_name#>
+                        </th>
+                        <th width="20%">
+                          <#ss_server#>
+                        </th>
+                        <th width="40%">
+                          <#AiDisk_Password#>
+                        </th>
+                        <th width="10%">
+                          <#ss_port#>
+                        </th>
+                      </tr>
+                    </table>
+                    <div class="load">
+                      <div class="loader"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    <div id="footer"></div>
 </body>
 </html>
