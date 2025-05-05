@@ -259,7 +259,7 @@ function change_ip6_service(){
 	showhide_div('tbl_ip6_wan', ip6on);
 	showhide_div('tbl_ip6_dns', ip6on);
 	showhide_div('tbl_ip6_lan', ip6on);
-	showhide_div('row_ip6_lan_relay', ip6_con=="static");
+	showhide_div('row_ip6_lan_relay', ip6_con == "static" ? 1 :0);
 
 	if (!ip6on) {
 		showhide_div('tbl_ip6_sit', 0);
