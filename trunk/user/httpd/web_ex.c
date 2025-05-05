@@ -2006,8 +2006,6 @@ static int shadowsocks_action_hook(int eid, webs_t wp, int argc, char **argv)
 	} else if (!strcmp(ss_action, "Update_chnroute")) {
 		notify_rc(RCN_RESTART_CHNROUTE_UPD);
 		needed_seconds = 1;
-	} else if (!strcmp(ss_action, "Reconnect_ss_tunnel")) {
-		notify_rc(RCN_RESTART_SS_TUNNEL);
 	} else if (!strcmp(ss_action, "Update_gfwlist")) {
 		notify_rc(RCN_RESTART_GFWLIST_UPD);
 	}
@@ -2019,8 +2017,6 @@ static int shadowsocks_status_hook(int eid, webs_t wp, int argc, char **argv)
 {
 	int ss_status_code = pids("ss-redir");
 	websWrite(wp, "function shadowsocks_status() { return %d;}\n", ss_status_code);
-	int ss_tunnel_status_code = pids("ss-local");
-	websWrite(wp, "function shadowsocks_tunnel_status() { return %d;}\n", ss_tunnel_status_code);
 	return 0;
 }
 

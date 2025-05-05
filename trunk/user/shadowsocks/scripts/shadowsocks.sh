@@ -124,6 +124,9 @@ EOF
 }
 
 func_start_ss_dns(){
+	if [ -z `pidof $ss_bin` ]; then
+		return $?;
+	fi
 	dns=`echo -n $(awk '!/127.0.0.1/{print $2}' /etc/resolv.conf)| tr -s " " ","`
 cat > "$dns_conf" <<EOF
 bind-addr 127.0.0.1
@@ -179,6 +182,10 @@ no-poll
 server=127.0.0.1#65353
 EOF
 
+	#dns.goole.com
+	for ip in 8.8.8.8 8.8.4.4; do
+		ipset add ss_spec_dst_fw $ip -exist
+	done
 	restart_dhcpd
 	sh -c "chinadns-ng -C $dns_conf &"
 }

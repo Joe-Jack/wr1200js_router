@@ -207,7 +207,6 @@ func_fill()
 	script_vpnsc="$dir_storage/vpns_client_script.sh"
 	script_vpncs="$dir_storage/vpnc_server_script.sh"
 	script_ezbtn="$dir_storage/ez_buttons_script.sh"
-	script_ipv6="$dir_storage/monitor_ipv6_route.sh"
 
 	user_hosts="$dir_dnsmasq/hosts"
 	user_dnsmasq_conf="$dir_dnsmasq/dnsmasq.conf"
@@ -275,9 +274,6 @@ EOF
 
 #drop caches
 sync && echo 3 > /proc/sys/vm/drop_caches
-
-#GET IPV6 prefix
-#$script_ipv6 down & #Modification take effect after reboot
 
 # Roaming assistant for mt76xx WiFi
 #iwpriv ra0 set KickStaRssiLow=-85
@@ -352,34 +348,6 @@ logger -t "di" "Internet state: \$1, elapsed time: \$2s."
 
 EOF
 		chmod 755 "$script_inets"
-	fi
-
-	# create post-wan script
-	if [ ! -f "$script_ipv6" ] ; then
-		cat > "$script_ipv6" <<EOF
-#!/bin/sh
-
-### Custom user script
-### Called after internal WAN up/down action
-### \$1 - WAN IPV6 listen action (up/down)
-
-if [ \$1 = "up" ]; then
-	ip -6 monitor route | while read line; do
-		if [[ \$line == *"eth3"* ]]; then
-			prefix = \${line%%?::*}
-			prefix_old = \$(ip -6 route |grep br0|grep -v fe80|awk -F "::" '{print $1}')
-			if [[ "\$prefix" != "fe80" && "\$prefix" != "\${prefix_old:0:-1}" ]]; then
-				nvram set ip6_lan_addr=\${prefix}4::1
-				restart_dhcpd
-			fi
-		fi
-	done
-elif [ \$1 = "down" ]; then
-	kill \$(pgrep -f monitor_ipv6_route.sh)
-fi
-
-EOF
-		chmod 755 "$script_ipv6"
 	fi
 
 	# create vpn server action script
