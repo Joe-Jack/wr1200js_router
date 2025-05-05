@@ -259,6 +259,7 @@ function change_ip6_service(){
 	showhide_div('tbl_ip6_wan', ip6on);
 	showhide_div('tbl_ip6_dns', ip6on);
 	showhide_div('tbl_ip6_lan', ip6on);
+	showhide_div('row_ip6_lan_relay', ip6_con=="static");
 
 	if (!ip6on) {
 		showhide_div('tbl_ip6_sit', 0);
@@ -336,7 +337,6 @@ function change_ip6_lan_auto(){
 	var v = !document.form.ip6_lan_auto[0].checked;
 	showhide_div('row_ip6_lan_addr', v);
 	showhide_div('row_ip6_lan_size', v);
-	showhide_div('row_ip6_lan_relay', v);
 }
 
 function change_ip6_lan_radv(){

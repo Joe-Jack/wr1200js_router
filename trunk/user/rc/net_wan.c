@@ -1333,7 +1333,7 @@ wan_up(char *wan_ifname, int unit, int is_static)
 #if defined (USE_IPV6)
 	if (is_wan_ipv6_type_sit() == 1)
 		wan6_up(wan_ifname, unit);
-	else if (nvram_get_int("ip6_lan_relay")) {
+	else if (is_wan_addr6_static() == 1 && nvram_get_int("ip6_lan_relay")) {
 		char *wan6_ifname;
 		if (wan_proto == IPV4_WAN_PROTO_IPOE_DHCP || !is_wan_ipv6_if_ppp())
 			wan6_ifname = wan_ifname;

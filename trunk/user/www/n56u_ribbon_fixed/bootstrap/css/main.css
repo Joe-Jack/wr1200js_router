@@ -584,7 +584,7 @@ textarea[readonly] {
 }
 
 #log_area {
-    font-family: 'Courier New', Courier, mono; font-size:13px;
+    font-family: 'SimHei', 'Courier New', Courier, mono; font-size:13px;
 }
 
 #system_time_log_area {
