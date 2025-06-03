@@ -259,9 +259,6 @@ ifeq ($(CONFIG_RT_DOT11K_RRM),y)
 $(RT_DRV_NAME)-objs += $(RT_DRV_PATH)/common/rrm_tlv.o
 $(RT_DRV_NAME)-objs += $(RT_DRV_PATH)/common/rrm_sanity.o
 $(RT_DRV_NAME)-objs += $(RT_DRV_PATH)/common/rrm.o
-$(RT_DRV_NAME)-objs += $(RT_DRV_PATH)/common/wnm.o
-$(RT_DRV_NAME)-objs += $(RT_DRV_PATH)/common/gas.o
-$(RT_DRV_NAME)-objs += $(RT_DRV_PATH)/common/hotspot.o
 endif
 
 ifeq ($(CONFIG_RT_CFG80211),y)
@@ -541,7 +538,10 @@ endif
 
 ifeq ($(CONFIG_RT_DOT11K_RRM),y)
 EXTRA_CFLAGS += -DDOT11K_RRM_SUPPORT -DAP_QLOAD_SUPPORT -DAP_SCAN_SUPPORT -DSCAN_SUPPORT -DAPPLE_11K_IOT
- EXTRA_CFLAGS += -DCONFIG_DOT11U_INTERWORKING -DCONFIG_DOT11V_WNM -DCONFIG_HOTSPOT
+endif
+
+ifeq ($(CONFIG_RT_HDR_TRANS),y)
+EXTRA_CFLAGS += -DHDR_TRANS_SUPPORT
 endif
 
 ifeq ($(CONFIG_RT_CSO),y)

@@ -448,7 +448,7 @@ start_dns_dhcpd(int is_ap_mode)
 			
 			if (i_dhcp6s_mode == 1) {
 				fprintf(fp, "dhcp-range=set:%s,::,constructor:%s%s,%d,%d\n",
-					DHCPD_RANGE_DEF_TAG, IFNAME_BR, ",ra-stateless,ra-names", 64, i_dhcp6s_irt);
+					DHCPD_RANGE_DEF_TAG, IFNAME_BR, ",ra-stateless", 64, i_dhcp6s_irt);
 			} else {
 				const char *range_mode = "";
 				int i_sflt = nvram_safe_get_int("ip6_lan_sflt", 1800, 120, 604800);

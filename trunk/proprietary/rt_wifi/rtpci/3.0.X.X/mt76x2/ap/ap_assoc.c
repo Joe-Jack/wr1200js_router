@@ -796,7 +796,7 @@ VOID ap_cmm_peer_assoc_req_action(
 	UCHAR MaxSupportedRate = 0;
 	UCHAR SupRateLen, PhyMode, FlgIs11bSta;
 	UCHAR i;
-	MAC_TABLE_ENTRY *pEntry;
+	MAC_TABLE_ENTRY *pEntry = NULL;
 #ifdef DBG
 	UCHAR *sAssoc = isReassoc ? (PUCHAR)"ReASSOC" : (PUCHAR)"ASSOC";
 #endif /* DBG */
@@ -2050,7 +2050,9 @@ LabelOK:
 		CFG80211_ApStaDelSendEvent(pAd, pEntry->Addr);
 #endif /* RT_CFG80211_P2P_SUPPORT */
 
-	NdisCopyMemory(&pEntry->Oui, &ie_list->OUIIe, 3);
+	if (pEntry) {
+		NdisCopyMemory(&pEntry->Oui, &ie_list->OUIIe, 3);
+	}
 
 	if (ie_list != NULL)
 		os_free_mem(NULL, ie_list);

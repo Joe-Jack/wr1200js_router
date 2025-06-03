@@ -1646,7 +1646,7 @@ ej_wl_auth_list(int eid, webs_t wp, int argc, char **argv)
 
 #define SSURV_LINE_LEN		(4+33+20+23+9+12+7+3)		// Channel+SSID+Bssid+Security+Signal+WiressMode+ExtCh+NetworkType
 #define SSURV_LINE_LEN_WPS	(4+33+20+23+9+13+7+3+4+4)	// Channel+SSID+Bssid+Security+Signal+WiressMode+ExtCh+NetworkType+WPS+PIN
-#define SSURV_LINE_LEN_OWE	(4+33+20+23+9+13+7+3+4+5+9)	// Channel+SSID+Bssid+Security+Signal+WiressMode+ExtCh+NetworkType+WPS+PIN
+#define SSURV_LINE_LEN_OWE	(4+33+20+23+9+13+7+3+4+5+6+10)	// Channel+SSID+Bssid+Security+Signal+WiressMode+ExtCh+WPS+PIN+BCNREPORT+OWE
 
 #if BOARD_HAS_5G_RADIO
 int
@@ -1805,7 +1805,7 @@ ej_wl_scan_2g(int eid, webs_t wp, int argc, char **argv)
 	retval += websWrite(wp, "[");
 	if (wrq.u.data.length > 0)
 	{
-		op = sp = wrq.u.data.pointer+line_len+2; // skip \n+\n
+		op = sp = wrq.u.data.pointer+line_len+2+3; // skip \n+\n + beaconrpt
 		len = strlen(op);
 
 		while (*sp && ((len - (sp-op)) >= 0))

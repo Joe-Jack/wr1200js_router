@@ -1047,7 +1047,8 @@ INT	Show_Repeater_Cli_Dump_Proc(
 				printk("%-12d", (int)pReptEntry->MatchLinkIdx);
 				printk("\n");
 			}
-		}	
+	}
+	return TRUE;	
 }
 #endif /* MAC_REPEATER_SUPPORT */
 

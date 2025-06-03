@@ -683,7 +683,6 @@ gen_ralink_config(int is_soc_ap, int is_aband, int disable_autoscan)
 	fprintf(fp, "CalCacheApply=%d\n", 0);
 	fprintf(fp, "LoadCodeMethod=%d\n", 0);
 	fprintf(fp, "VHT_Sec80_Channel=%d\n", 0);
-	fprintf(fp, "WNMEnable=%d\n", 0);
 	fprintf(fp, "SKUenable=%d\n", 0);
 	fprintf(fp, "PowerUpenable=%d\n", 0);
 	fprintf(fp, "VOW_Airtime_Fairness_En=%d\n", 0);
@@ -1317,7 +1316,9 @@ gen_ralink_config(int is_soc_ap, int is_aband, int disable_autoscan)
 	//KV
 	i_val = nvram_wlan_get_int(is_aband, "HT_80211KV");
 	fprintf(fp, "RRMEnable=%d;%d\n", i_val, i_val);
-	fprintf(fp, "WNMEnable=%d;%d\n", i_val, i_val);
+	if (!is_aband) {
+		fprintf(fp, "WNMEnable=%d;%d\n", i_val, i_val);
+	}
 
 	//HT_BAWinSize
 	i_val = nvram_wlan_get_int(is_aband, "HT_BAWinSize");
