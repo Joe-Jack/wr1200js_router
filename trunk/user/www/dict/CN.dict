@@ -1875,7 +1875,7 @@ HSDPAConfig_username_itemdesc=请输入你的用户名。
 HSDPAConfig_password_itemdesc=请输入你的密码。
 HSDPAConfig_usbadaptor_itemdesc=请选择你的 USB 适配器
 HSDPAConfig_safely_remove=安全移除 USB 网卡
-LANHostConfig_IPRouters_itemdesc=ZVMODELVZ 的内网 IP 地址，默认值是 192.168.2.1
+LANHostConfig_IPRouters_itemdesc=ZVMODELVZ 的内网 IP 地址，默认值是 192.168.123.1
 HSDPAConfig_hsdpa_mode_itemdesc=选择你的 USB 网卡类型，若要移除 USB 网卡，请打开<a href='/index.asp' target=\'_blank\'>网络地图</a>并且点击 [移除]。
 Not_authpage_login_again=若要重新登录，请先关闭当前窗口。
 GO_HSDPA_SETTING=USB 网卡设置
