@@ -946,6 +946,9 @@ static const struct _inadyn_checkip_url {
 	{ "checkip6.spdyn.de",        "/"     , false },
 	{ "v4.ipv6-test.com",         "/api/myip.php", true },
 	{ "v6.ipv6-test.com",         "/api/myip.php", true },
+	{ "4.ipw.cn",		      "/"     , true },
+	{ "6.ipw.cn",                 "/"     , true },
+	{ "test.ipw.cn",              "/"     , true },
 };
 
 static const char *
@@ -1034,6 +1037,7 @@ write_inadyn_conf(const char *conf_file)
 		fprintf(fp, "allow-ipv6 = %s\n", i_ddns_ipv6 ? "true" : "false");
 		fprintf(fp, "secure-ssl = false\n");
 		fprintf(fp, "broken-rtc = true\n");
+		fprintf(fp, "ca-trust-file = /etc_ro/cacert.pem\n");
 
 		/* DDNS 1*/
 		if (strcmp(ddns1_svc, "custom") == 0) {

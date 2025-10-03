@@ -6,10 +6,12 @@ dns_conf="/etc/china_dns.conf"
 ss_proc="/var/ss-redir"
 gfwlist="/etc/storage/gfwlist/gfwlist_domain.txt"
 ss_dns="tcp://8.8.8.8,tcp://8.8.4.4"
+ss_pid="0"
 
 #/usr/bin/ss-redir -> /var/ss-redir -> /usr/bin/ss-orig-redir or /usr/bin/ssr-redir
 
 ss_type="$(nvram get ss_type)" #0=ss;1=ssr
+ss_simple_obfs="$(nvram get ss_simple_obfs)" #0=none;1=obfs_local
 
 if [ "${ss_type:-0}" = "0" ]; then
 	ln -sf /usr/bin/ss-orig-redir $ss_proc
@@ -74,8 +76,15 @@ get_gfw_ext(){
 	fi
 }
 
+get_plugin_ext(){
+        if [ "${ss_type:-0}" = "0" -a "${ss_simple_obfs:-0}" = '1' ]; then
+                printf "--plugin obfs-local --plugin-opts \"%s\"\n" $(nvram get ss_obfs_param)
+        fi
+}
+
 func_start_ss_redir(){
-	sh -c "$ss_bin -c $ss_json_file $(get_arg_udp) & "
+	sh -c "$ss_bin -c $ss_json_file $(get_arg_udp) $(get_plugin_ext)" &
+	ss_pid=$!
 	return $?
 }
 
@@ -105,6 +114,17 @@ func_start_ss_rules(){
 }
 
 func_gen_ss_json(){
+	result=$(nslookup $ss_server | awk 'NR>3 && /Address [0-9]+:/ {print $3}')
+	min_rtt=2000
+	for ip in $result
+	do
+		rtt=$(ping -c 1 -W 1 "$ip" 2>/dev/null | awk -F'/' 'END {if (NF>=5) print $5; else print "$min_rtt"}')
+		rtt_int=${rtt%.*}
+		[ "$rtt_int" -lt "$min_rtt" ] && min_rtt=$rtt_int && min_ip=$ip
+	done
+	if [ -n "$min_ip" ]; then
+		ss_server=$min_ip
+	fi
 cat > "$ss_json_file" <<EOF
 {
     "server": "$ss_server",
@@ -124,8 +144,9 @@ EOF
 }
 
 func_start_ss_dns(){
-	if [ -z `pidof $ss_bin` ]; then
-		return $?;
+	local pid=`pgrep -P $ss_pid`
+	if [ -z $pid ]; then
+		return 1;
 	fi
 	dns=`echo -n $(awk '!/127.0.0.1/{print $2}' /etc/resolv.conf)| tr -s " " ","`
 cat > "$dns_conf" <<EOF
@@ -187,18 +208,22 @@ EOF
 		ipset add ss_spec_dst_fw $ip -exist
 	done
 	restart_dhcpd
-	sh -c "chinadns-ng -C $dns_conf &"
+	sh -c "chinadns-ng -C $dns_conf" &
+	return $?
 }
 
 func_stop_ss_dns(){
 	killall -q chinadns-ng
+	cat /dev/null > /etc/dnsmasq/dnsmasq_ex.conf
 	restart_dhcpd
 }
 
 func_stop(){
 	func_stop_ss_dns
 	killall -q $ss_bin
-	ipset  destroy  chnroute
+	if [ "$ss_mode" = "1" ]; then
+		ipset  destroy  chnroute
+	fi
 	ss-rules -f && loger $ss_bin "stop"
 }
 

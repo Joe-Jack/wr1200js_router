@@ -10,6 +10,11 @@ download_test:
 	( if [ ! -f $(SRC_NAME).tar.xz ]; then \
 		wget -t5 --timeout=20 --no-check-certificate -O $(SRC_NAME).tar.xz $(SRC_URL); \
 	fi )
+ifeq ($(CONFIG_FIRMWARE_INCLUDE_CURL),y)
+	( if [ ! -f cacert.pem ]; then \
+		wget -t5 --timeout=20 --no-check-certificate -O cacert.pem https://curl.se/ca/cacert.pem; \
+	fi )
+endif
 
 extract_test:
 	( if [ ! -d $(SRC_NAME) ]; then \
@@ -51,7 +56,7 @@ configure:
 		--disable-libcurl-option \
 		--disable-threaded-resolver \
 		--without-gnutls \
-		--without-ca-bundle \
+		--with-ca-bundle=/etc/cacert.pem \
 		--without-libidn \
 		--without-libssh2 \
 		--without-krb4 \
@@ -75,5 +80,6 @@ install:
 romfs:
 ifeq ($(CONFIG_FIRMWARE_INCLUDE_CURL),y)
 	$(ROMFSINST) -d $(DESTDIR)/bin/curl /usr/bin/curl
+	$(ROMFSINST) $(PWD)/libcurl/cacert.pem /etc_ro/cacert.pem
 endif
 	cp -fP $(DESTDIR)/lib/libcurl.so* $(ROMFSDIR)/lib

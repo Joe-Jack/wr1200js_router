@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <sstream>
 #include <openssl/evp.h>
 #include <memory>
 #include "tinyjson.hpp"
@@ -10,40 +11,15 @@
 using namespace tiny;
 
 // 全局函数
-std::vector<std::string> splitString(const std::string& str, const std::string& delimiter)
-{
-	std::vector<std::string> tokens;
+const std::vector<std::string> split(const std::string &str, const char &delimiter) {
+    std::vector<std::string> result;
+    std::stringstream ss(str);
+    std::string tok;
 
-	// str为空字符串
-	if (str == "") {
-		return tokens;
-	}
-
-	// delimiter为空字符串
-	if (delimiter == "") {
-		tokens.push_back(str);
-		return tokens;
-	}
-
-	// 字符串分割
-	size_t startPos = 0;
-	auto index = str.find_first_of(delimiter);
-	while (index != std::string::npos) {
-		auto temp = str.substr(startPos, index - startPos);
-		if (temp != "") {
-			tokens.push_back(temp);
-		}
-		startPos = index + 1;
-		index = str.find_first_of(delimiter, startPos);
-	}
-
-	// 最后一个字符串
-	auto temp = str.substr(startPos);
-	if (temp != "") {
-		tokens.push_back(temp);
-	}
-
-	return tokens;
+    while (std::getline(ss, tok, delimiter)) {
+        result.push_back(tok);
+    }
+    return result;
 }
 
 class Protocol {
@@ -53,6 +29,7 @@ public:
 	std::string server_name;  // 服务器
 	unsigned int port;   // 端口
 	std::string password;  // 密码
+	std::string obfs;	// 混淆
 	// 成员函数
 	static bool base64Decode(const std::string& encoded, std::string& decoded) {
 		size_t src_len = encoded.size(), decode_len;
@@ -110,6 +87,18 @@ public:
 		EVP_EncodeBlock((unsigned char*)ret.data(), data, size);
 		return std::move(ret);
 	}
+
+	static bool isBase64Char(char c) {
+		return (std::isalnum(c) || c == '+' || c == '/' || c == '=');
+	}
+
+	static size_t findBase64End(const std::string& input) {
+		size_t pos = 0;
+		while (pos < input.size() && isBase64Char(input[pos])) {
+			++pos;
+		}
+		return pos;
+	}
 };
 
 class Shadowsocks: public Protocol {
@@ -118,38 +107,54 @@ private:
 
 	void parseData(const std::string& data) {
 		std::vector<std::string> param, child;
-		std::string delimiter = ":@#", decoded_param;  //特有分割符
-		char terminator = '=';
-		int padding_num = 0;
-		param = splitString(data, delimiter);
+		std::string b64_str, str, b64_dstr;
+		size_t pos;
 
+		if (data.empty()) {
+			return;
+		}
+
+		// name
+		pos = data.find('#');
+		str = data.substr(0, pos);
+		if (pos != std::string::npos) {
+			name = data.substr(pos + 1);
+		}
+
+		// obfs
+		pos = str.find('?'); 
+		if (pos != std::string::npos) {
+			obfs = str.substr(pos + 1);
+			obfs = urlDecode(obfs);
+			//std::cout << obfs << std::endl;
+		}
+		str = str.substr(0, pos);
+		
 		//解析ss://method:password@server:port
-		param[1].erase(0, 2); // 删除'//' 符号
-		padding_num = 4 - (param[1].size() % 4);
-
-		if (padding_num) {
-			param[1].append(padding_num, terminator);
-		}
-
-		if (base64Decode(param[1], decoded_param)) {
-			param.erase(param.begin() + 1);
-			child = splitString(decoded_param, delimiter);
-			param.insert(param.begin() + 1, child.begin(), child.end());
-			if (child.size() > 2) { // 支持2022协议
-				param.erase(param.begin() + 3);
-				param[2] += ":" + child[2];
+		// 解析base64
+		pos = findBase64End(str);
+		b64_str = data.substr(0, pos);
+		while (b64_str.length() % 4 != 0) b64_str += '=';
+		base64Decode(b64_str, b64_dstr);
+		str.replace(0, pos, b64_dstr);
+	
+		child = split(str, '@');
+		for (std::string& it : child) {
+			pos = it.find(':');
+			if (pos == std::string::npos) {
+				base64Decode(it, it);
+				pos = it.find(':');
 			}
-		} else if (padding_num) {
-			param[1].erase(param[1].end() - padding_num);
-		}
+			param.push_back(it.substr(0, pos));
+			param.push_back((pos != std::string::npos) ? it.substr(pos + 1) : "");
+		}	
 
 		//初始化赋值
-		protocol = param[0];
-		method = param[1];
-		password = param[2];
-		server_name = param[3];
-		port = std::stoi(param[4]);
-		name = param[5];
+		protocol = "ss";
+		method = param[0];
+		password = param[1];
+		server_name = param[2];
+		port = std::stoi(param[3]); 
 		return;
 	}
 public:
@@ -201,7 +206,6 @@ std::unique_ptr<Protocol> createProtocol(const std::string& type, const std::str
 size_t req_reply(void *ptr, size_t size, size_t nmemb, void *stream)
 {
     std::string *str = (std::string*)stream;
-    //std::cout << *str << std::endl;
     (*str).append((char*)ptr, size*nmemb);
     return size * nmemb;
 }
@@ -216,12 +220,12 @@ CURLcode curl_get_req(const std::string &url, std::string &response)
     {
         // set params
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str()); // url
-       	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, false); // if want to use https
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, false); // set peer and host verify false
+       	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L); // if want to use https
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L); // set peer and host verify false
+	curl_easy_setopt(curl, CURLOPT_USERAGENT, "MyApp/1.0 libcurl-agent");
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, req_reply);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&response);
-        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 3); // set transport and time out time
-        curl_easy_setopt(curl, CURLOPT_TIMEOUT, 3);
+        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
         // start req
         res = curl_easy_perform(curl);
     }
@@ -232,7 +236,7 @@ CURLcode curl_get_req(const std::string &url, std::string &response)
 
 int main(int argc, char *argv[]) {
 	std::string  decoded, encoded, input;
-	std::string str, del = "\n", ss_file = "/tmp/ss_link"; // 输出字符串
+	std::string str, ss_file = "/tmp/ss_link"; // 输出字符串
 	std::vector<std::string> tokens; // 逐行输入
 	std::vector<std::unique_ptr<Protocol>> protos;
 	TinyJson jsonarray;
@@ -255,12 +259,11 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (Protocol::base64Decode(encoded, decoded)) {
-		tokens = splitString(decoded, del);
+		tokens = split(decoded, '\n');
 		for (auto it = tokens.begin(); it != tokens.end(); ++it) {
-			char targetChar = ':'; //协议分割符
-			size_t pos = (*it).find(targetChar);
+			size_t pos = (*it).find_first_of("://"); //协议分割符
 			if (pos == std::string::npos)  continue;
-			auto proto = createProtocol((*it).substr(0, pos), *it);
+			auto proto = createProtocol((*it).substr(0, pos), (*it).substr(pos + 3));
 			if (proto == nullptr) continue;
 			protos.push_back(std::move(proto));
 		}

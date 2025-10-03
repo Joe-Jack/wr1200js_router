@@ -45,17 +45,20 @@ function initial(){
         var o4 = document.form.ss_obfs;
         var o5 = document.form.ss_lower_port_only;
         var o6 = document.form.ss_type;
+	var o7 = document.form.ss_simple_obfs;
         o1.value = '<% nvram_get_x("","ss_method"); %>';
         o2.value = '<% nvram_get_x("","ss_mode"); %>';
         o3.value = '<% nvram_get_x("","ss_protocol"); %>';
         o4.value = '<% nvram_get_x("","ss_obfs"); %>';
         o5.value = '<% nvram_get_x("","ss_lower_port_only"); %>';
         o6.value = '<% nvram_get_x("","ss_type"); %>';
+        o7.value = '<% nvram_get_x("","ss_simple_obfs"); %>';
         change_ss_watchcat_display();
         fill_ss_status(shadowsocks_status());
         $("chnroute_count").innerHTML = '<#menu5_17_3#>' + chnroute_count() ;
         $("gfwlist_count").innerHTML = '<#menu5_17_3#>' + gfwlist_count() ;
         switch_ss_type();
+	switch_ss_obfs();
 }
 
 function switch_ss_type(){
@@ -63,7 +66,17 @@ function switch_ss_type(){
         showhide_div('row_ss_protocol', v);
         showhide_div('row_ss_protocol_para', v);
         showhide_div('row_ss_obfs', v);
-        showhide_div('row_ss_obfs_para', v);
+        showhide_div('row_simple_obfs', v ^ 1);
+}
+
+function switch_ss_obfs(){
+        var v = document.form.ss_simple_obfs.value; 
+	var type = document.form.ss_type.value;
+	if (type == 0) {
+       		showhide_div('row_ss_obfs_para', v);
+	} else {
+		showhide_div('row_ss_obfs_para', 0);
+	}
 }
 
 function isValidHttpUrl(str) {
@@ -166,7 +179,7 @@ function fill_ss_status(status_code){
                             <div class="round_bottom">
                                 <div class="row-fluid">
 					                <div id="tabMenu" class="submenuBlock"></div>
-					                <table width="100%" cellpadding="4" cellspacing="0" class="table">
+							<table width="100%" cellpadding="4" cellspacing="0" class="table">
                                         <tr>
                                             <th colspan="2" style="background-color: rgba(171, 168, 167,0.2);"><#menu5_16_1#></th>
                                         </tr>
@@ -209,7 +222,8 @@ function fill_ss_status(status_code){
 
 					<tr> <th width="50%"><#menu5_16_12#></th>
                                             <td>
-                                                <input type="url" class="input" name="ss_link" placeholder="https://www.example.com" value="<% nvram_get_x("", "ss_link"); %>">
+                                                <input type="password" class="input" size="32" maxlength="96" name="ss_link" id="ss_link" placeholder="https://www.example.com" value="<% nvram_get_x("", "ss_link"); %>">
+                                                <button style="margin-left: -5px;" class="btn" type="button" onclick="passwordShowHide('ss_link')"><i class="icon-eye-close"></i></button>
                                             </td>
                                         </tr>
 
@@ -286,6 +300,15 @@ function fill_ss_status(status_code){
                                         <tr id="row_ss_protocol_para" style="display:none;"> <th width="50%"><#menu5_16_23#></th>
                                             <td>
                                                 <input type="text" maxlength="72" class="input" size="64" name="ss_proto_param" value="<% nvram_get_x("","ss_proto_param"); %>" />
+                                            </td>
+                                        </tr>
+
+                                        <tr id="row_simple_obfs" style="display:none;"> <th width="50%"><#menu5_16_13#></th>
+                                            <td>
+                                                <select name="ss_simple_obfs" class="input" style="width: 200px;" onchange="switch_ss_obfs()">
+                                                    <option value="0" >none</option>
+                                                    <option value="1" >simple-obfs</option>
+                                                </select>
                                             </td>
                                         </tr>
 

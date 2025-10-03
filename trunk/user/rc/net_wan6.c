@@ -449,6 +449,7 @@ int dhcp6c_main(int argc, char **argv)
 			update_resolvconf(0, 0);
 	}
 
+	notify_ddns_update();
 	return 0;
 }
 

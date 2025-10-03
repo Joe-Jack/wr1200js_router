@@ -248,3 +248,15 @@ diff -rupwN inadyn-2.8.1-orig/src/openssl.c inadyn-2.8.1/src/openssl.c
  		      err, X509_verify_cert_error_string(err), depth, buf);
  		if (broken_rtc && err == X509_V_ERR_CERT_NOT_YET_VALID)
  			preverify_ok = 1;
+diff -rupwN inadyn-2.8.1-orig/src/cache.c inadyn-2.8.1/src/cache.c
+--- inadyn-2.8.1-orig/src/cache.c	2020-02-16 23:59:28.000000000 +0800
++++ inadyn-2.8.1/src/cache.c	2025-10-01 11:30:24.432515972 +0800
+@@ -49,7 +49,7 @@ static int nslookup(ddns_alias_t *alias)
+ 	struct addrinfo *result;
+ 
+ 	memset(&hints, 0, sizeof(struct addrinfo));
+-	hints.ai_family = AF_INET;	/* IPv4 */
++	hints.ai_family = AF_UNSPEC;	/* IPv4 or IPv6 */
+ 	hints.ai_socktype = SOCK_DGRAM;	/* Datagram socket */
+ 	hints.ai_flags = 0;
+ 	hints.ai_protocol = 0;          /* Any protocol */
