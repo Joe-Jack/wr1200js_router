@@ -114,16 +114,18 @@ func_start_ss_rules(){
 }
 
 func_gen_ss_json(){
-	result=$(nslookup $ss_server | awk 'NR>3 && /Address [0-9]+:/ {print $3}')
-	min_rtt=2000
-	for ip in $result
-	do
-		rtt=$(ping -c 1 -W 1 "$ip" 2>/dev/null | awk -F'/' 'END {if (NF>=5) print $5; else print "$min_rtt"}')
-		rtt_int=${rtt%.*}
-		[ "$rtt_int" -lt "$min_rtt" ] && min_rtt=$rtt_int && min_ip=$ip
-	done
-	if [ -n "$min_ip" ]; then
-		ss_server=$min_ip
+	result=$(curl -s -k 'https://uapis.cn/api/v1/network/dns?domain='$ss_server'&type=A' -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)' \
+		| grep -o '"target":"[^"]*"' | sed 's/"target":"//;s/"//' \
+		| xargs -n1 -I {} bash -c ' \
+			IP="{}"
+			TIME=$(ping -c1 -w1 "$IP" 2>/dev/null | grep "time=" | sed -n "s/.*time=\(.*\) ms/\1/p")
+			if [ -n "$TIME" ]; then
+				echo "$TIME $IP"
+			fi
+		' \
+		| sort -n | head -n1 | awk '{print $2}')
+	if [ -n "$result" ]; then
+		ss_server=$result
 	fi
 cat > "$ss_json_file" <<EOF
 {
