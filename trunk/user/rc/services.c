@@ -617,7 +617,6 @@ start_services_once(int is_ap_mode)
 	start_telnetd();
 #if defined(APP_SSHD)
 	start_sshd();
-	doSystem("/usr/bin/iappd.sh %s", "start");
 #endif
 	start_vpn_server();
 	start_watchdog();
