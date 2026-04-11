@@ -15,17 +15,17 @@ config_test:
 
 configure:
 	( cd $(SRC_NAME) && \
-	./autogen.sh ; \
-	knfsd_cv_bsd_signals=no \
+	export knfsd_cv_bsd_signals=no \
 	PKG_CONFIG_PATH=$(STAGEDIR)/lib/pkgconfig \
-	LIBS="-L$(STAGEDIR)/lib" \
-	./configure \
-		--prefix=/ \
-		--disable-ssp \
-		--disable-documentation \
-		--disable-assert \
-		--host=$(HOST_TARGET) \
-		--build=$(HOST_BUILD) ; \
+	LIBS="-L$(STAGEDIR)/lib"; \
+		chmod +x autogen.sh && ./autogen.sh ; \
+		chmod +x configure && ./configure \
+	--prefix=/ \
+	--disable-ssp \
+	--disable-documentation \
+	--disable-assert \
+	--host=$(HOST_TARGET) \
+	--build=$(HOST_BUILD) \
 	)
 
 clean:
