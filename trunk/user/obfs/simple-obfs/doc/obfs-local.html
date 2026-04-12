@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="generator" content="AsciiDoc 10.2.0">
+<title>obfs-local(1)</title>
+</head>
+<body>
+<h1>obfs-local(1)</h1>
+<p>
+</p>
+<hr>
+<h2><a name="_name"></a>NAME</h2>
+<p>obfs-local - simple-obfs client</p>
+<hr>
+<h2><a name="_synopsis"></a>SYNOPSIS</h2>
+<p><strong>obfs-local</strong>
+ [-6] [-h|--help]
+ [-s <emphasis>&lt;server_host&gt;</emphasis>] [-p <emphasis>&lt;server_port&gt;</emphasis>] [-l <emphasis>&lt;local_port&gt;</emphasis>]
+ [-f <emphasis>&lt;pid_file&gt;</emphasis>] [-t <emphasis>&lt;timeout&gt;</emphasis>] [-c <emphasis>&lt;config_file&gt;</emphasis>]
+ [-i <emphasis>&lt;interface&gt;</emphasis>] [-a <emphasis>&lt;user_name&gt;</emphasis>] [-b <emphasis>&lt;local_address]
+ [-n &lt;nofile&gt;</emphasis>] [--fast-open]
+ [--obfs <emphasis>&lt;http|tls&gt;</emphasis>] [--obfs-host <emphasis>&lt;hostname&gt;</emphasis>]</p>
+<hr>
+<h2><a name="_description"></a>DESCRIPTION</h2>
+<p><strong>Obfs-simple</strong> is a very simple obfuscating tunnel tool.</p>
+<p><strong>Obfs-simple</strong> is written in pure C and takes advantage of libev to
+achieve both high performance and low resource consumption.</p>
+<p><strong>Obfs-simple</strong> consists of two components. <code>obfs-local</code>(1) works as a standard
+tunnel on local machines to obfuscate TCP traffic.</p>
+<hr>
+<h2><a name="_options"></a>OPTIONS</h2>
+<dl>
+<dt>
+-s <emphasis>&lt;server_host&gt;</emphasis>
+</dt>
+<dd>
+<p>
+Set the server&#8217;s hostname or IP.
+</p>
+</dd>
+<dt>
+-p <emphasis>&lt;server_port&gt;</emphasis>
+</dt>
+<dd>
+<p>
+Set the server&#8217;s port number.
+</p>
+</dd>
+<dt>
+-l <emphasis>&lt;local_port&gt;</emphasis>
+</dt>
+<dd>
+<p>
+Set the local port number.
+</p>
+</dd>
+<dt>
+-a <emphasis>&lt;user_name&gt;</emphasis>
+</dt>
+<dd>
+<p>
+Run as a specific user.
+</p>
+</dd>
+<dt>
+-f <emphasis>&lt;pid_file&gt;</emphasis>
+</dt>
+<dd>
+<p>
+Start obfs-simple as a daemon with specific pid file.
+</p>
+</dd>
+<dt>
+-t <emphasis>&lt;timeout&gt;</emphasis>
+</dt>
+<dd>
+<p>
+Set the socket timeout in seconds. The default value is 60.
+</p>
+</dd>
+<dt>
+-c <emphasis>&lt;config_file&gt;</emphasis>
+</dt>
+<dd>
+<p>
+Use a configuration file.
+</p>
+</dd>
+<dt>
+-n <emphasis>&lt;number&gt;</emphasis>
+</dt>
+<dd>
+<p>
+Specify max number of open files.
+</p>
+<p>Only available on Linux.</p>
+</dd>
+<dt>
+-i <emphasis>&lt;interface&gt;</emphasis>
+</dt>
+<dd>
+<p>
+Send traffic through specific network interface.
+</p>
+<p>For example, there are three interfaces in your device,
+which is lo (127.0.0.1), eth0 (192.168.0.1) and eth1 (192.168.0.2).
+Meanwhile, you configure <code>obfs-local</code> to listen on 0.0.0.0:8388 and bind to eth1.
+That results the traffic go out through eth1, but not lo nor eth0.
+This option is useful to control traffic in multi-interface environment.</p>
+</dd>
+<dt>
+-b <emphasis>&lt;local_address&gt;</emphasis>
+</dt>
+<dd>
+<p>
+Specify local address to bind.
+</p>
+</dd>
+<dt>
+-6
+</dt>
+<dd>
+<p>
+Resovle hostname to IPv6 address first.
+</p>
+</dd>
+<dt>
+--fast-open
+</dt>
+<dd>
+<p>
+Enable TCP fast open.
+</p>
+<p>Only available with Linux kernel &gt; 3.7.0.</p>
+</dd>
+<dt>
+--mptcp
+</dt>
+<dd>
+<p>
+Enable Multipath TCP.
+</p>
+<p>Only available with MPTCP enabled Linux kernel.</p>
+</dd>
+<dt>
+--obfs <emphasis>&lt;http|tls&gt;</emphasis>
+</dt>
+<dd>
+<p>
+Enable HTTP or TLS obfuscating. (Experimental)
+</p>
+</dd>
+<dt>
+--obfs-host <emphasis>&lt;hostname&gt;</emphasis>
+</dt>
+<dd>
+<p>
+Specify the hostname for obfuscating. (Experimental)
+</p>
+</dd>
+<dt>
+--obfs-uri <emphasis>&lt;uri&gt;</emphasis>
+</dt>
+<dd>
+<p>
+Specify the HTTP path uri for obfuscating. (Experimental)
+</p>
+</dd>
+<dt>
+-v
+</dt>
+<dd>
+<p>
+Enable verbose mode.
+</p>
+</dd>
+<dt>
+-h|--help
+</dt>
+<dd>
+<p>
+Print help message.
+</p>
+</dd>
+</dl>
+<hr>
+<h2><a name="_example"></a>EXAMPLE</h2>
+<p><code>obfs-local</code>(1) can be started from command line and run in foreground.
+Here is an example:</p>
+<pre><code># Start obfs-local with given parameters
+obfs-local -s example.com -p 12345 -l 1080 --obfs http --obfs-host www.baidu.com</code></pre>
+<hr>
+<h2><a name="_see_also"></a>SEE ALSO</h2>
+<p><code>obfs-server</code>(1),
+/etc/simple-obfs/config.json</p>
+<p></p>
+<p></p>
+<hr><p><small>
+Last updated
+ 2025-10-15 01:37:48 CST
+</small></p>
+</body>
+</html>
