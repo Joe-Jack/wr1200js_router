@@ -30,11 +30,6 @@ jobs:
             targets: "WR1200JS"
     steps:
       - uses: actions/checkout@v2
-      - name: Clone simple-obfs
-        run: |
-          mkdir -p trunk/user/obfs
-          cd trunk/user/obfs
-          git clone --recursive https://github.com/shadowsocks/simple-obfs.git simple-obfs
       - name: Prepare environment
         run: |
           sudo apt update
