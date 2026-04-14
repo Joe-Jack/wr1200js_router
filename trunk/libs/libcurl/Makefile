@@ -42,9 +42,9 @@ configure:
 		--disable-rtsp \
 		--disable-telnet \
 		--disable-tftp \
-		--disable-smtp \
-		--disable-pop3 \
-		--disable-imap \
+		--enable-smtp \
+		--enable-pop3 \
+		--enable-imap \
 		--disable-sspi \
 		--disable-dict \
 		--disable-ares \
